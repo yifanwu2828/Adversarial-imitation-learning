@@ -1,0 +1,85 @@
+
+
+ENV:
+  wrapper: [clip_act, absorbing]  # default: []
+
+
+OPTIM:
+  # desc: Optimizer class and zero_grad input
+  optim_cls: adam        # default: adam
+  optim_set_to_none: true  # default: false
+
+
+ALGO:
+  max_grad_norm: 10  # default: None 10 is good
+  gamma: 0.99         # default: 0.99
+  seed: 42
+
+
+PPO:
+  # desc: PPO unique inputs
+  epoch_ppo: 20     # default: 10
+  gae_lambda: 0.97  # default: 0.97
+  clip_eps: 0.2     # default: 0.2
+  coef_ent: 0.01   # default: 0.0
+
+  with_reward: false  # dont use reward for ail 
+
+  # PPO policy_kwargs
+  pi: [128, 128]              # default: [64, 64]
+  vf: [128, 128]              # default: [64, 64]
+  activation: relu_inplace  # default: "relu"
+  lr_actor: 3.0e-4            # default: 3.0e-4 
+  lr_critic: 3.0e-4           # default: 3.0e-4
+  orthogonal_init: false       # default: false
+
+
+SAC:
+  # desc: SAC unique inputs
+  start_steps: 10_000
+  num_gradient_steps: 1       # deafult: 1 # ! slow O(n)
+  target_update_interval: 1   # deafult: 1
+  tau: 0.01                   # default: 0.005
+  log_alpha_init: 1.0         # default: 1.0
+  lr_alpha: 3.0e-4            # default: 3.0e-4
+
+  batch_size: 256             # default: 256     PPO: 2048 
+  buffer_size: 2_000_000      # default: 1_000_000
+  with_reward: false          # dont use reward for ail     
+  extra_data: []              # default: []
+  
+  # SAC policy_kwargs
+  pi: [128, 128]              # default: [128, 128]
+  qf: [128, 128]              # default: [128, 128]
+  activation: "relu_inplace"  # default: "relu"
+  lr_actor: 7.3e-4            # default: 7.3e-4
+  lr_critic: 7.3e-4           # default: 7.3e-4
+
+
+# Discriminator settings
+DISC:
+  use_spectral_norm: true    # default: false
+  
+  # Discriminator Architecture
+  hidden_units: [100, 100]    # default: [128, 128] 
+  hidden_activation: relu_inplace
+
+  ent_coef: 0.03 # default: 0.0
+
+  epoch_disc: 1  
+  lr_disc: 1.0e-4
+  # choice = ["logsigmoid", "softplus", "logit"] # default: "logsigmoid"
+  rew_input_choice: logsigmoid
+  # rew_input_choice: softplus
+  # rew_input_choice: logit
+
+  # rew_clip: true         # default: False
+  # max_rew_magnitude: 1.0   # default: 10.0
+  # min_rew_magnitude: -1.0  # default: -10.0
+    
+
+AIRL:
+  disc_cls: airl_sa  
+  subtract_logp: false  # deafult: true
+
+

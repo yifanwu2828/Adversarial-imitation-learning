@@ -1,0 +1,12 @@
+InvertedPendulum-v2:
+ observation_space: Box(-inf, inf, (4,), float64)
+ action_space: Box(-3.0, 3.0, (1,), float32)
+
+HalfCheetah-v2:
+ observation_space: Box(-inf, inf, (17,), float64)
+ action_space: Box(-1.0, 1.0, (6,), float32)
+
+Hopper-v3:
+ observation_space: Box(-inf, inf, (11,), float64)
+ action_space: Box(-1.0, 1.0, (3,), float32)
+

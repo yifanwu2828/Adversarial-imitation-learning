@@ -1,0 +1,6 @@
+number,value,params_activation,params_batch_size,params_clip_eps,params_ent_coef,params_epoch_ppo,params_gae_lambda,params_gamma,params_lr_actor,params_lr_critic,params_max_grad_norm,params_optim_cls,params_orthogonal_init,params_pi,params_vf,state
+0,1000.0,tanh,64,0.3,0.00020822744877076985,5,0.9,0.95,0.0002277370342677345,0.00016559297646794824,2.0,Adam,False,small,medium,COMPLETE
+1,2.3600000000000003,relu,32,0.4,0.031994356748387125,1,0.99,0.99,0.0025606147629120123,0.00010185385552344326,2.0,AdamW,True,medium,small,COMPLETE
+2,794.8399999999999,tanh,1024,0.4,3.7405295529046346e-06,10,0.99,0.999,0.00017943542464704865,0.002984833645205143,0.9,AdamW,False,medium,large,COMPLETE
+3,1000.0,tanh,32,0.1,0.040794980501388266,1,0.92,0.95,0.0004383177358257161,0.00020190229746185962,5.0,Adam,False,small,large,COMPLETE
+4,627.5600000000001,relu,128,0.1,5.921311652933566e-06,10,0.99,0.995,0.0034307788979601396,0.00013859010235227318,0.8,Adam,False,small,large,COMPLETE

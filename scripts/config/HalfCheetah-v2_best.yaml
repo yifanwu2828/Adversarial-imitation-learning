@@ -1,0 +1,51 @@
+ENV:
+  # Choice: [clip_act, vec_norm, norm_clip_obs, absorbing]
+  wrapper: [clip_act, ]  # default: []
+
+
+OPTIM:
+  # desc: Optimizer class and zero_grad input
+  optim_cls: adam        # default: adam
+  optim_set_to_none: true  # default: false
+
+
+ALGO:
+  max_grad_norm: 10  # default: None 10 is good
+  gamma: 0.99         # default: 0.99
+  seed: 0
+
+
+SAC:
+  # desc: SAC unique inputs
+  start_steps: 10_000
+  num_gradient_steps: 1       # deafult: 1 
+  target_update_interval: 1   # deafult: 1
+  tau: 0.005   #0.01           # default: 0.005
+  log_alpha_init: 1.0         # default: 1.0
+  lr_alpha: 3.0e-4            # default: 3.0e-4
+
+  # batch_size: 256             # default: 256        
+  buffer_size: 3_000_000      # default: 1_000_000
+  with_reward: false          # dont use reward for ail     
+  extra_data: []              # default: []
+  
+  # SAC policy_kwargs
+  pi: [256, 256]              # default: [128, 128]
+  qf: [256, 256]              # default: [128, 128]
+  activation: "relu_inplace"  # default: "relu"
+  lr_actor: 3.0e-4            # default: 7.3e-4
+  lr_critic: 3.0e-4           # default: 7.3e-4
+
+
+DISC:
+  use_spectral_norm: false    # default: false  
+  # Discriminator Architecture
+  hidden_units: [512]    # default: [128, 128] 
+  hidden_activation: relu_inplace
+
+  ent_coef: 0.03  # default: 0.0
+
+  epoch_disc: 1  
+  lr_disc: 7.0e-5
+  # choice = ["logsigmoid", "softplus", "logit"] # default: "logsigmoid"
+  rew_input_choice: logsigmoid

@@ -1,0 +1,72 @@
+
+
+CUDA:
+  # desc: torch.backends
+  cudnn: true
+
+# LOG:
+#   log_every_n_updates: 20
+#   eval_interval: 5000
+#   num_eval_episodes: 10
+
+# WANDB:
+#   # desc: wandb.watch function inputs
+#   log_param: true
+#   log_type: gradients
+#   log_freq: 1000
+
+
+ENV:
+  # Choice: [clip_act, vec_norm, norm_clip_obs, absorbing]
+  wrapper: [clip_act, ]
+
+TEST_ENV:
+  wrapper: [clip_act, ]  # noisy_act
+
+
+
+OPTIM:
+  # desc: Optimizer class and zero_grad input
+  optim_cls: adam
+  optim_set_to_none: true
+
+
+ALGO:
+  max_grad_norm: 10    # default: None  0.5 for sac on hopper
+  # gamma: 0.99         # default: 0.99
+
+
+PPO:
+  # desc: PPO unique inputs
+  epoch_ppo: 10
+  gae_lambda: 0.97
+  clip_eps: 0.2
+  coef_ent: 0.01
+
+  # policy_kwargs
+  pi: [128, 128]
+  vf: [128, 128]
+  activation: 'relu'
+  lr_actor: 7.0e-4
+  lr_critic: 3.0e-4
+  orthogonal_init: false
+
+
+SAC:
+  # desc: SAC unique inputs
+  # buffer_size: 3.0e+6
+  start_steps: 10_000
+  num_gradient_steps: 1  # ! slow O(n)
+  target_update_interval: 1  # Recommend to sync with num_gradient_steps.
+  tau: 0.01
+  log_alpha_init: 1.0
+  lr_alpha: 3.0e-4
+  extra_data: ["log_pis", "remaining_steps"]              # default: []
+
+  # policy_kwargs
+  pi: [256, 256]
+  qf: [256, 256]
+  activation: 'relu'
+  lr_actor: 7.3e-4
+  lr_critic: 7.3e-4
+
