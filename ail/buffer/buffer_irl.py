@@ -6,7 +6,6 @@ import warnings
 import numpy as np
 from numpy.random.mtrand import seed
 import torch as th
-from traitlets.traitlets import default
 
 from ail.common.type_alias import GymEnv
 from ail.common.math import normalize

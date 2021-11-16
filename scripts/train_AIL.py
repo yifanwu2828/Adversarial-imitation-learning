@@ -325,8 +325,11 @@ def run(args, cfg, path):
 
 
 def main():
-    args = CLI()
+     # ENVIRONMENT VARIABLE
+    os.environ["WANDB_NOTEBOOK_NAME"] = "test"  # Modify to assign a meaningful name.
 
+    args = CLI()
+    
     # Path
     path = pathlib.Path(__file__).parent.resolve()
     print(f"File_dir: {path}")
@@ -343,7 +346,7 @@ def main():
         th.autograd.set_detect_anomaly(True)
 
     if args.cuda:
-        os.environ["OMP_NUM_THREADS"] = "1"
+        # os.environ["OMP_NUM_THREADS"] = "1"
         # torch backends
         th.backends.cudnn.benchmark = (
             cfg.CUDA.cudnn
@@ -355,6 +358,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # ENVIRONMENT VARIABLE
-    os.environ["WANDB_NOTEBOOK_NAME"] = "test"  # Modify to assign a meaningful name.
+   
     main()

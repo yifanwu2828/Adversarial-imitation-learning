@@ -1,5 +1,6 @@
 gym
 numpy
+scipy
 mujoco-py
 matplotlib
 scikit-learn
@@ -7,3 +8,6 @@ torch
 tensorboard
 tqdm
 yacs
+icecream
+tensorboard
+PyYAML
