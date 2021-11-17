@@ -12,7 +12,7 @@ from ail.color_console import COLORS, Console
 from ail.common.env_utils import maybe_make_env
 from ail.common.pytorch_util import obs_as_tensor
 from ail.common.type_alias import GymEnv
-from ail.common.utils import set_random_seed, get_stats, countdown
+from ail.common.utils import set_random_seed, get_stats, countdown, get_system_info
 
 
 class BaseTrainer:
@@ -85,9 +85,11 @@ class BaseTrainer:
         use_wandb: bool,
         eval_behavior_type: str = "mix",
         use_optuna: bool = False,
+        print_system_info: bool = True,
         **kwargs,
     ):
-
+        get_system_info(print_system_info and verbose > 0)
+        
         if env_kwargs is None:
             # We apply ClipBoxAction wrapper to both env by default
             env_kwargs = {"env_wrapper": ["clip_act"]}
@@ -151,6 +153,7 @@ class BaseTrainer:
         # Placeholder for tensorboard SummaryWriter.
         self.writer = None
 
+        # Hard coding the tensorboard cofiguration.
         self.tb_tags = {
             "actor_loss": "loss/actor",
             "critic_loss": "loss/critic",
@@ -182,7 +185,7 @@ class BaseTrainer:
         else:
             raise ValueError(
                 f"Unrecognized evaluation behavior type: {eval_behavior_type}. "
-                f"Valid options are [stochastic, mode, average]."
+                f"Valid options are [mode, average]."
             )
         self.log_interval = log_interval
 
@@ -219,10 +222,8 @@ class BaseTrainer:
         # visualize result from half explore and half exploit
         for t in range(self.num_eval_episodes):
             obs = self.env_test.reset()
-            ep_ret = 0.0
-            ep_len = 0
-            done = False
-            deterministic = False if t < self.stochastic_eval_episodes else True
+            ep_ret, ep_len, done = 0.0, 0, False
+            deterministic = t >= self.stochastic_eval_episodes
 
             while not done:
                 obs = obs_as_tensor(obs, self.device)
@@ -272,7 +273,12 @@ class BaseTrainer:
 
             # Handle pruning based on the intermediate value.
             if trial.should_prune():
-                import optuna
+                try:
+                    import optuna
+                except ImportError:
+                    raise ImportError(
+                        "To use automatic hyperparameter optimization, you need to install optuna."
+                    )
 
                 raise optuna.TrialPruned()
 

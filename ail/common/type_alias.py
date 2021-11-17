@@ -15,7 +15,7 @@ GymWrapper = gym.Wrapper
 GymSpace = gym.spaces.Space
 GymDict = gym.spaces.Dict
 GymObs = Union[Tuple, Dict[str, Any], np.ndarray, int]
-GymStepReturn = Tuple[GymObs, float, bool, Dict]
+GymStepReturn = Tuple[GymObs, float, bool, Dict[str, Any]]
 
 # tensor type
 TensorDict = Dict[Union[str, int], th.Tensor]

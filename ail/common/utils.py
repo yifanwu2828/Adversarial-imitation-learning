@@ -181,3 +181,33 @@ def compute_disc_stats(
         ("explained_var_gen", float(explained_var_gen)),
     ]
     return OrderedDict(pairs)
+
+    
+def get_system_info(print_info: bool = True) -> Tuple[Dict[str, str], str]:
+    """
+    Retrieve system and python env info for the current system.
+    :param print_info: Whether to print or not those infos
+    :return: Dictionary summing up the version for each relevant package
+        and a formatted string.
+    """
+    import platform
+    import gym
+    env_info = {
+        "OS": f"{platform.platform()} {platform.version()}",
+        "Python": platform.python_version(),
+        "PyTorch": th.__version__,
+        "GPU Detected": str(th.cuda.is_available()),
+        "Numpy": np.__version__,
+        "Gym": gym.__version__,
+    }
+    env_info_str = ""
+    for i, (key, value) in enumerate(env_info.items()):
+        env_info_str += f"** {key}: {value}"
+        if i < len(env_info) - 1:
+            env_info_str += "\n"
+    if print_info:
+        print("\n"+"*"*50 + " System Info " + "*"*50)
+        print(env_info_str)
+        print("*"*50 + "*************" + "*"*50)
+        
+    return env_info, env_info_str

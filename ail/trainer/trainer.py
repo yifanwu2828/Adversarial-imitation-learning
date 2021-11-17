@@ -60,6 +60,7 @@ class Trainer(BaseTrainer):
         wandb_kwargs: Optional[Dict[str, Any]] = None,
         use_optuna: bool = False,
         trial=None,
+        print_system_info: bool = True,
         **kwargs,
     ):
         super().__init__(
@@ -78,6 +79,7 @@ class Trainer(BaseTrainer):
             use_wandb,
             eval_behavior_type,
             use_optuna,
+            print_system_info,
             **kwargs,
         )
 

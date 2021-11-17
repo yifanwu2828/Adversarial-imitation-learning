@@ -97,7 +97,7 @@ def unwrap_wrapper(
     env: GymEnv, wrapper_class: Type[gym.Wrapper]
 ) -> Optional[gym.Wrapper]:
     """
-    Retrieve a ``VecEnvWrapper`` object by recursively searching.
+    Retrieve a ``gym.Env`` object by recursively searching.
     :param env: Environment to unwrap
     :param wrapper_class: Wrapper to look for
     :return: Environment unwrapped till ``wrapper_class`` if it has been wrapped with it
