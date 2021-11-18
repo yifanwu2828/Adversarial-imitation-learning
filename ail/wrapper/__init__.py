@@ -9,6 +9,7 @@ from ail.wrapper.action_wrapper import (
 
 from ail.wrapper.vev_norm_wrapper import VecNormalize
 from ail.wrapper.absorbing_wrapper import AbsorbingWrapper
+from ail.wrapper.time_aware_obs_wrapper import TimeAwareObsWrapper
 
 
 EnvWrapper = {
@@ -32,4 +33,5 @@ EnvWrapper = {
         clip_reward=10,
     ),
     "absorbing": AbsorbingWrapper,
+    "time_aware": TimeAwareObsWrapper,
 }

@@ -3,7 +3,7 @@ import gym
 import numpy as np
 from ail.common.type_alias import GymEnv, GymObs, GymStepReturn
 
-class TimeAwareObsWrapper(gym.wrapper):
+class TimeAwareObsWrapper(gym.Wrapper):
     """
     Add remaining time to observation. Normalize it to [-1, 1]
     See https://arxiv.org/pdf/1712.00378.pdf
@@ -12,7 +12,7 @@ class TimeAwareObsWrapper(gym.wrapper):
     """
     def __init__(self, env: GymEnv, max_steps: int = 1_000):
         obs_space = env.observation_space
-        assert obs_space.ndim == 1, "Only 1D observation space is supported."
+        assert len(obs_space.shape) == 1, "Only 1D observation space is supported."
         
         low, high = obs_space.low, obs_space.high
         # ? In original paper it should normalize observation space to [-1, 1]
@@ -24,6 +24,8 @@ class TimeAwareObsWrapper(gym.wrapper):
         # obtain max episode length from environment
         try:
             self._max_steps = env._max_episode_steps # pylint: disable=protected-access
+            print(f"max episode length from the environment: {self._max_steps}")
+            
         except AttributeError:
             self._max_steps = None
             
@@ -31,6 +33,8 @@ class TimeAwareObsWrapper(gym.wrapper):
         # Should make this consistent with the timelimit wrapper
         if self._max_steps is None:
             self._max_steps = max_steps
+            print(f"Can not infer max episode length from the environment, use-defined values: {self._max_steps}")
+            
         
         self._current_step = 0
     

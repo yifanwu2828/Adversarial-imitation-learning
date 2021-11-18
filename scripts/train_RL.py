@@ -188,10 +188,13 @@ def run(args, cfg, path):
             tags = ["baseline", f"{args.env_id}", str(args.algo).upper()]
             if "absorbing" in cfg.ENV.wrapper:
                 tags.append("absorbing")
+            
+            if "time_aware" in cfg.ENV.wrapper:
+                tags.append("TA")
             # Save API key for convenience or you have to login every time
             wandb.login()
             wandb.init(
-                project="AIL",
+                project="TAIRL",
                 notes="tweak baseline",
                 tags=tags,
                 config=config,  # Hyparams & meta data
@@ -242,8 +245,7 @@ if __name__ == "__main__":
         th.autograd.set_detect_anomaly(True)
 
     if args.cuda:
-        # TODO: investigate this
-        os.environ["OMP_NUM_THREADS"] = "1"
+        # os.environ["OMP_NUM_THREADS"] = "1"
         # torch backends
         th.backends.cudnn.benchmark = (
             cfg.CUDA.cudnn
