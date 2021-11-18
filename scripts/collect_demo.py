@@ -12,7 +12,6 @@ import matplotlib
 
 matplotlib.use("Tkagg")
 from tqdm import tqdm
-from stable_baselines3 import SAC, PPO, HER
 
 try:
     from icecream import install  # noqa
@@ -28,13 +27,6 @@ from ail.common.utils import set_random_seed
 from ail.common.pytorch_util import asarray_shape2d
 from ail.common.type_alias import DoneMask
 from ail.wrapper import AbsorbingWrapper
-
-
-SB3_ALGO = {
-    "sb3_ppo": PPO,
-    "sb3_sac": SAC,
-    "sb3_her": HER,
-}
 
 
 def collect_demo(
@@ -211,6 +203,12 @@ if __name__ == "__main__":
     print(args.weight, "\n")
 
     if args.algo.startswith("sb3"):
+        from stable_baselines3 import SAC, PPO
+        
+        SB3_ALGO = {
+            "sb3_ppo": PPO,
+            "sb3_sac": SAC,
+        }
         sb3_model = SB3_ALGO[args.algo].load(args.weight)
         algo = None
     else:
@@ -256,14 +254,14 @@ if __name__ == "__main__":
     dones = (data["dones"],)
     next_obs = data["next_obs"]
 
-    obs_norm = (-1 <= obs).all() and (obs <= 1).all()
-    act_norm = (-1 <= act).all() and (act <= 1).all()
-    next_obs_norm = (-1 <= next_obs).all() and (next_obs <= 1).all()
+    is_obs_norm = (-1 <= obs).all() and (obs <= 1).all()
+    is_act_norm = (-1 <= act).all() and (act <= 1).all()
+    is_next_obs_norm = (-1 <= next_obs).all() and (next_obs <= 1).all()
 
     info = {
-        "action in [-1, 1]": act_norm.item(),
-        "observation in [-1, 1]": obs_norm.item(),
-        "next_observation in [-1, 1]": next_obs_norm.item(),
+        "action in [-1, 1]": is_act_norm.item(),
+        "observation in [-1, 1]": is_obs_norm.item(),
+        "next_observation in [-1, 1]": is_next_obs_norm.item(),
     }
     pprint(info)
     info.update(ret_info)

@@ -1,7 +1,7 @@
+import argparse
 import os
 import pathlib
 import sys
-import argparse
 
 import yaml
 import torch as th
@@ -158,7 +158,9 @@ def run(args, cfg, path):
     log_dir = path.joinpath("runs", exp_name)
 
     if not os.path.exists(log_dir):
-        os.makedirs(log_dir, exist_ok=True)
+        os.makedirs(log_dir, exist_ok=True)    
+
+    print("\nSaving logs and models under", log_dir)    
 
     config = dict(
         total_timesteps=args.num_steps,
@@ -199,7 +201,7 @@ def run(args, cfg, path):
                 tags=tags,
                 config=config,  # Hyparams & meta data
             )
-            wandb.run.name = exp_name
+            wandb.run.name = exp_name 
             # make sure to use the same config as passed to wandb
             config = wandb.config
         except ImportError:
@@ -219,8 +221,16 @@ def run(args, cfg, path):
 
     del algo_kwargs, ppo_kwargs, sac_kwargs
 
-    trainer.run_training_loop()
+    try:
+        trainer.run_training_loop()
+    except KeyboardInterrupt:
+        print("\nExiting from training early")
+        keep = input("Keep logs & models? (y/n)? ")
+        if keep.lower() in ["n", "no"]:
+            import shutil
 
+            shutil.rmtree(log_dir)
+        
 
 if __name__ == "__main__":
     # ENVIRONMENT VARIABLE
@@ -236,7 +246,7 @@ if __name__ == "__main__":
     cfg.merge_from_file(cfg_path)
     cfg.freeze()
 
-    print(cfg)
+    # print(cfg)
 
     if args.debug:
         import numpy as np

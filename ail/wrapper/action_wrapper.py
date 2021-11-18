@@ -23,7 +23,7 @@ class RescaleBoxAction(ActionWrapper):
         self.a = np.zeros(env.action_space.shape, dtype=env.action_space.dtype) + a
         self.b = np.zeros(env.action_space.shape, dtype=env.action_space.dtype) + b
         self.action_space = Box(
-            low=a, high=b, shape=env.action_space.shape, dtype=env.action_space.dtype
+            low=a, high=b, shape=env.action_space.shape, dtype=np.float32
         )
 
     def action(self, action) -> np.ndarray:

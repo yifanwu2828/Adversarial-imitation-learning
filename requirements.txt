@@ -1,6 +1,7 @@
 gym
 numpy
 scipy
+matplotlib
 mujoco-py
 matplotlib
 scikit-learn

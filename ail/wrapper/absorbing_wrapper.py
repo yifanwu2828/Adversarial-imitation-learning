@@ -11,6 +11,7 @@ class AbsorbingWrapper(gym.ObservationWrapper):
             shape=(obs_space.shape[0] + 1,),
             low=obs_space.low[0],
             high=obs_space.high[0],
+            dtype=np.float32
         )
         self._absorbing_state = self.get_absorbing_state()
         self._zero_action = self.get_fake_action()
