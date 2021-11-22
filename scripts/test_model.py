@@ -35,7 +35,7 @@ if __name__ == '__main__':
         }
     
     
-    env_id = "FetchPush-v1"
+    env_id = "FetchSlide-v1"
     
     env = gym.make(env_id)
     env = TimeFeatureWrapper(gym.make(env_id))
@@ -43,9 +43,15 @@ if __name__ == '__main__':
     
     ic(env.observation_space)
     
-    model_path = f"./{env_id}"
+    algo = "TQC"
+    if algo.lower() == "sac":
+        model_cls = SAC
+    elif algo.lower() == "tqc":
+        model_cls = TQC
     
-    model = TQC.load(model_path, env=env, custom_objects=custom_objects,)
+    model_path = f"./ail/rl-trained-agents/{env_id}/{algo.lower()}/{env_id}_sb3"
+    
+    model = model_cls.load(model_path, env=env, custom_objects=custom_objects,)
     
     
     for i in range(10):
