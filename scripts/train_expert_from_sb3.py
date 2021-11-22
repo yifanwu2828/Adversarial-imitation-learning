@@ -9,7 +9,7 @@ import numpy as np
 import torch as th
 from icecream import ic
 
-from stable_baselines3 import A2C, SAC, PPO, HER
+from stable_baselines3 import A2C, SAC, PPO 
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import EvalCallback
@@ -21,7 +21,6 @@ ALGO = {
     "ppo": PPO,
     "a2c": A2C,
     "sac": SAC,
-    "her": HER,
 }
 
 

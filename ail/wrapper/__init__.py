@@ -1,13 +1,15 @@
 from functools import partial
 
+from gym.wrappers import FilterObservation, FlattenObservation
+
 from ail.wrapper.action_wrapper import (
     NormalActionNoise,
     ClipBoxAction,
     NormalizeBoxAction,
     RescaleBoxAction,
 )
-
 from ail.wrapper.vev_norm_wrapper import VecNormalize
+from ail.wrapper.done_after_success import DoneAfterSuccess
 from ail.wrapper.absorbing_wrapper import AbsorbingWrapper
 from ail.wrapper.time_aware_obs_wrapper import TimeAwareObsWrapper
 
@@ -32,6 +34,9 @@ EnvWrapper = {
         clip_obs=float("inf"),
         clip_reward=10,
     ),
+    "done_success": DoneAfterSuccess,
     "absorbing": AbsorbingWrapper,
-    "time_aware": TimeAwareObsWrapper,
+    "time_aware": partial(TimeAwareObsWrapper, verbose=True),
+    "filter_obs": partial(FilterObservation, filter_keys=["desired_goal", "observation"]),
+    "flatten_obs": FlattenObservation,
 }

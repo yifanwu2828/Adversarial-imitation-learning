@@ -2,6 +2,7 @@ import argparse
 import os
 import pathlib
 import sys
+import shutil
 
 import yaml
 import torch as th
@@ -223,13 +224,11 @@ def run(args, cfg, path):
 
     try:
         trainer.run_training_loop()
+        return None, None
     except KeyboardInterrupt:
-        print("\nExiting from training early")
-        keep = input("Keep logs & models? (y/n)? ")
-        if keep.lower() in ["n", "no"]:
-            import shutil
-
-            shutil.rmtree(log_dir)
+        keep = input("\nExiting from training early.\nKeep logs & models? (y/n)? ")
+        
+        return keep.lower() in ["n", "no"], log_dir
         
 
 if __name__ == "__main__":
@@ -261,4 +260,8 @@ if __name__ == "__main__":
             cfg.CUDA.cudnn
         )  # ? Does this useful for non-convolutions?
 
-    run(args, cfg, path)
+    keep, log_dir = run(args, cfg, path)
+    
+    if not keep:
+        shutil.rmtree(log_dir)
+

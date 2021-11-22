@@ -10,32 +10,34 @@ class TimeAwareObsWrapper(gym.Wrapper):
     :param env: gym environment.
     :param max_steps: Maximum number of stpes in an episode.
     """
-    def __init__(self, env: GymEnv, max_steps: int = 1_000):
+    def __init__(self, env: GymEnv, max_steps: int = 1_000, verbose: bool = False):
         obs_space = env.observation_space
         assert len(obs_space.shape) == 1, "Only 1D observation space is supported."
         
         low, high = obs_space.low, obs_space.high
         # ? In original paper it should normalize observation space to [-1, 1]
         # ? But it make no sense if the time is negative.
-        low, high = np.concatenate([low, [0]]), np.concatenate([high, [1]])
+        low, high = np.concatenate([low, [0.]]), np.concatenate([high, [1.]])
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=np.float32)
         super().__init__(env)
         
         # obtain max episode length from environment
-        try:
+        if hasattr(env, "_max_episode_steps"):
             self._max_steps = env._max_episode_steps # pylint: disable=protected-access
-            print(f"max episode length from the environment: {self._max_steps}")
-            
-        except AttributeError:
-            self._max_steps = None
-            
-        # if this is not specified, we'll use a user-specified default value
-        # Should make this consistent with the timelimit wrapper
-        if self._max_steps is None:
-            self._max_steps = max_steps
-            print(f"Can not infer max episode length from the environment, use-defined values: {self._max_steps}")
-            
+            if verbose:
+                print(f"max episode length infer from the environment: {self._max_steps}")
         
+        elif hasattr(env, "spec"):
+            self._max_steps = env.spec.max_episode_steps
+            if verbose:
+                print(f"max episode length from the environment: {self._max_steps}")
+        
+        else:   
+            # if this is not specified in Env, we'll use a user-specified default value
+            # Should make this consistent with the timelimit wrapper
+            self._max_steps = max_steps
+            print(f"CANNOT infer max episode length from the environment, use defined values instead: {self._max_steps}")
+            
         self._current_step = 0
     
     @property

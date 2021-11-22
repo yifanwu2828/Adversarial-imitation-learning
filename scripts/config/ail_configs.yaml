@@ -17,10 +17,10 @@ WANDB:
 
 ENV:
   # Choice: [clip_act, vec_norm, norm_clip_obs, absorbing]
-  wrapper: [clip_act, absorbing]  # default: [] (no wrapper)
+  wrapper: [clip_act, filter_obs, flatten_obs, time_aware, done_success]  # default: [] (no wrapper)
 
 TEST_ENV:
-  wrapper: [clip_act, ]  # default: [] (no wrapper)
+  wrapper: [clip_act, filter_obs, flatten_obs, time_aware, done_success]  # default: [] (no wrapper)
 
 
 OPTIM:
@@ -59,7 +59,7 @@ SAC:
   start_steps: 10_000
   num_gradient_steps: 1       # deafult: 1 # ! slow O(n)
   target_update_interval: 1   # deafult: 1
-  tau: 0.01                   # default: 0.005
+  tau: 0.005                   # default: 0.005
   log_alpha_init: 1.0         # default: 1.0
   lr_alpha: 3.0e-4            # default: 3.0e-4
 
@@ -69,11 +69,11 @@ SAC:
   extra_data: ["log_pis", "remaining_steps"]              # default: []
   
   # SAC policy_kwargs
-  pi: [256, 256]              # default: [128, 128]
-  qf: [256, 256]              # default: [128, 128]
+  pi: [128, 128]              # default: [128, 128]
+  qf: [128, 128]              # default: [128, 128]
   activation: "relu_inplace"  # default: "relu"
-  lr_actor: 3.0e-4            # default: 7.3e-4
-  lr_critic: 3.0e-4           # default: 7.3e-4
+  lr_actor: 7.0e-4            # default: 7.3e-4
+  lr_critic: 7.0e-4           # default: 7.3e-4
 
 
 
@@ -92,7 +92,7 @@ DISC:
   # ent_coef: 0.03  # default: 0.0
 
   epoch_disc: 1  
-  lr_disc: 7.0e-5
+  lr_disc: 1.e-4  #7.0e-5
   # choice = ["logsigmoid", "softplus", "logit"] # default: "logsigmoid"
   rew_input_choice: logsigmoid
   # rew_input_choice: softplus
@@ -111,8 +111,8 @@ AIRL:
 
 
 GAIL:
-  # inverse: false   # default: false
-  inverse: true  # default: false
+  inverse: false   # default: false
+  # inverse: true  # default: false
 
 
 # Record:

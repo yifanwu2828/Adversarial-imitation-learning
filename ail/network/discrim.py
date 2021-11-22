@@ -87,8 +87,6 @@ class DiscrimNet(nn.Module, ABC):
     to move towards recovering the expertpolicy,
     irrespective of the quality of the learned reward.
 
-    More discussion: https://arxiv.org/pdf/1809.02925.pdf section 4.1, 4.1.1, 5.2
-
     ---------------------------------------------------------------------------
     The objective of the discriminator is to
     minimize cross-entropy loss
@@ -205,7 +203,6 @@ class DiscrimNet(nn.Module, ABC):
 
         rew_type = RewardType[rew_type.lower()].value
         choice = ChoiceType[choice.lower()].value
-
         if rew_type == "gail":
             # * (1)  − ln(1 − D) = softplus(h)
             if choice == "logsigmoid":

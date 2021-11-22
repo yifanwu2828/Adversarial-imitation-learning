@@ -208,7 +208,7 @@ class SAC(OffPolicyAgent):
         :return: next_state, episode length
         """
         if max_ep_len is None:
-            max_ep_len = env._max_episode_steps
+            max_ep_len = env.spec.max_episode_steps
 
         # Random exploration step
         if global_timesteps <= self.start_steps:
@@ -254,7 +254,7 @@ class SAC(OffPolicyAgent):
         # Agent keeps alive should not be assigned to done by env's time limit.
         # See: https://github.com/sfujim/TD3/blob/master/main.py#L127
         # * Here we use an inverse convention in which DONE = 0 and NOT_DONE = 1.
-        if (episode_timesteps + 1 == env._max_episode_steps) or not done:
+        if (episode_timesteps + 1 == env.spec.max_episode_steps) or not done:
             done_mask = DoneMask.NOT_DONE.value
         else:
             done_mask = DoneMask.DONE.value

@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import pathlib
 from pprint import pprint
 
@@ -27,6 +28,20 @@ from ail.common.utils import set_random_seed
 from ail.common.pytorch_util import asarray_shape2d
 from ail.common.type_alias import DoneMask
 from ail.wrapper import AbsorbingWrapper
+from sb3_contrib.common.wrappers import TimeFeatureWrapper
+
+
+# Check if we are running python 3.8+
+# we need to patch saved model under python 3.6/3.7 to load them
+newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
+
+custom_objects = {}
+if newer_python_version:
+    custom_objects = {
+        "learning_rate": 0.0,
+        "lr_schedule": lambda _: 0.0,
+        "clip_range": lambda _: 0.0,
+    }
 
 
 def collect_demo(
@@ -41,17 +56,29 @@ def collect_demo(
     save_dir=None,
 ):
     env = maybe_make_env(env, env_wrapper=wrapper, tag="Expert", verbose=2)
+    env = TimeFeatureWrapper(env)
     env.seed(seed)
     set_random_seed(seed)
 
     use_absorbing_state = is_wrapped(env, AbsorbingWrapper)
+    
+    if isinstance(env.observation_space, gym.spaces.Dict):
+        achieved_goal = env.observation_space["achieved_goal"]
+        desired_goal = env.observation_space["desired_goal"]
+        observation = env.observation_space["observation"]
+        obs_shape = (desired_goal.shape[0] + observation.shape[0], )
+    else:
+        obs_shape = env.observation_space.shape
 
     demo_buffer = ReplayBuffer(
         capacity=buffer_size,
         device=device,
-        obs_shape=env.observation_space.shape,
+        # obs_shape=env.observation_space.shape,
+        obs_shape=obs_shape,
+        
         act_shape=env.action_space.shape,
         with_reward=False,
+        seed=seed,
     )
 
     total_return = []
@@ -66,7 +93,7 @@ def collect_demo(
 
         if sb3_model is not None:
             action, _ = sb3_model.predict(
-                th.as_tensor(state, dtype=th.float32), deterministic=True
+                state,  deterministic=True
             )
         elif algo is not None:
             action = algo.exploit(th.as_tensor(state, dtype=th.float32), scale=False)
@@ -76,21 +103,34 @@ def collect_demo(
         next_state, reward, done, _ = env.step(action)
 
         # * Here we use an inverse convention in which DONE = 0 and NOT_DONE = 1.
-        if not done or t + 1 == env._max_episode_steps:
+        if not done or t + 1 == env.spec.max_episode_steps:
             done_mask = DoneMask.NOT_DONE.value
         else:
             done_mask = DoneMask.DONE.value
         t += 1
 
         if use_absorbing_state:
-            if done and t < env._max_episode_steps:
+            if done and t < env.spec.max_episode_steps:
                 next_state = env.absorbing_state
-        data = {
-            "obs": asarray_shape2d(state),
-            "acts": asarray_shape2d(action),
-            "dones": asarray_shape2d(done_mask),
-            "next_obs": asarray_shape2d(next_state),
-        }
+        
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            flatten_state = np.concatenate([state["desired_goal"], state["observation"]])
+            flatten_next_state = np.concatenate([next_state["desired_goal"], next_state["observation"]])
+            data = {
+                "obs": asarray_shape2d(flatten_state),
+                "acts": asarray_shape2d(action),
+                "dones": asarray_shape2d(done_mask),
+                "next_obs": asarray_shape2d(flatten_next_state),
+                
+            }
+        else:
+            data = {
+                "obs": asarray_shape2d(flatten_state),
+                "acts": asarray_shape2d(action),
+                "dones": asarray_shape2d(done_mask),
+                "next_obs": asarray_shape2d(next_state),
+                }
+            
 
         demo_buffer.store(transitions=data, truncate_ok=True)
         episode_return += reward
@@ -159,13 +199,20 @@ if __name__ == "__main__":
         "-env",
         type=str,
         required=True,
-        choices=["InvertedPendulum-v2", "HalfCheetah-v2", "Hopper-v3", "NavEnv-v0"],
+        choices=[
+            "InvertedPendulum-v2",
+            "HalfCheetah-v2",
+            "Hopper-v3",
+            "NavEnv-v0",
+            "FetchReach-v1",
+            "FetchPush-v1",
+        ],
         help="Envriment to interact with",
     )
     p.add_argument(
         "--algo",
         type=str,
-        choices=["ppo", "sac", "sb3_ppo", "sb3_sac"],
+        choices=["ppo", "sac", "sb3_ppo", "sb3_sac", "sb3_tqc"],
         required=True,
     )
     p.add_argument("--hidden_size", "-hid", type=int, default=64)
@@ -204,12 +251,19 @@ if __name__ == "__main__":
 
     if args.algo.startswith("sb3"):
         from stable_baselines3 import SAC, PPO
+        from sb3_contrib import TQC
         
         SB3_ALGO = {
             "sb3_ppo": PPO,
             "sb3_sac": SAC,
+            "sb3_tqc": TQC,
         }
-        sb3_model = SB3_ALGO[args.algo].load(args.weight)
+        env = TimeFeatureWrapper (gym.make(args.env_id))
+        ic(env.observation_space)
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            sb3_model = SB3_ALGO[args.algo].load(args.weight, env=env, custom_objects=custom_objects,)
+        else:
+            sb3_model = SB3_ALGO[args.algo].load(args.weight, custom_objects=custom_objects,)
         algo = None
     else:
         dummy_env = gym.make(args.env_id)

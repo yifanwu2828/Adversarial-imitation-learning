@@ -581,7 +581,7 @@ class BaseBuffer:
         cls,
         transitions: Dict[str, np.ndarray],
         device: Union[th.device, str],
-        seed: int,
+        seed: int = 0,
         capacity: Optional[int] = None,
         truncate_ok: bool = False,
         with_reward: bool = True,

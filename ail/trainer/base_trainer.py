@@ -119,7 +119,7 @@ class BaseTrainer:
         self.max_ep_len: int = (
             max_ep_len
             if max_ep_len is not None and isinstance(max_ep_len, int)
-            else self.env._max_episode_steps  # noqa
+            else self.env.spec.max_episode_steps # noqa
         )
 
         self.enable_logging = False if log_dir is None or log_dir == "" else True

@@ -35,7 +35,7 @@ def CLI():
         "--env_id",
         "-env",
         type=str,
-        choices=["InvertedPendulum-v2", "HalfCheetah-v2", "Hopper-v3", "NavEnv-v0"],
+        choices=["InvertedPendulum-v2", "HalfCheetah-v2", "Hopper-v3", "NavEnv-v0", "FetchReach-v1", "FetchPush-v1"],
         help="Envriment to train on.",
     )
     p.add_argument(
@@ -191,8 +191,8 @@ def run(args, cfg, path):
                 repeat.append(fname)
         if len(repeat) > 1:
             raise ValueError(f"Too many demo files in {demo_dir}")
-        args.demo_path = demo_dir / fname
-
+        args.demo_path = demo_dir / repeat[0]
+    ic(args.demo_path)
     transitions = dict(np.load(args.demo_path))
 
     algo_kwargs.update(
@@ -294,8 +294,7 @@ def run(args, cfg, path):
             # Save API key for convenience or you have to login every time.
             wandb.login()
             wandb.init(
-                entity="ucsd-erl-ail",
-                project="ail",
+                project="TAIRL",
                 notes="tweak baseline",
                 tags=tags,
                 config=config_copy,  # Hyparams & meta data.
