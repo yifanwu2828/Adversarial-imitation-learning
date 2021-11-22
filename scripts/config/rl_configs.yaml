@@ -17,11 +17,14 @@ CUDA:
 
 
 ENV:
-  # Choice: [clip_act, vec_norm, norm_clip_obs, absorbing]
-  wrapper: [clip_act, ]
+  # Choice: [clip_act, vec_norm, norm_clip_obs, absorbing, time_aware]
+  wrapper: [clip_act]
+  # wrapper: [clip_act, time_aware]
+
 
 TEST_ENV:
-  wrapper: [clip_act, ]  # noisy_act
+  wrapper: [clip_act]  # noisy_act
+  # wrapper: [clip_act, time_aware]  # noisy_act
 
 
 
@@ -44,12 +47,20 @@ PPO:
   coef_ent: 0.01
 
   # policy_kwargs
+  activation: 'relu'
+
   pi: [128, 128]
   vf: [128, 128]
-  activation: 'relu'
   lr_actor: 7.0e-4
   lr_critic: 3.0e-4
   orthogonal_init: false
+
+  # # hopper-v3 
+  # pi: [256, 256]
+  # vf: [256, 256]
+  # lr_actor: 1.0e-4
+  # lr_critic: 3.0e-4
+  # orthogonal_init: true
 
 
 SAC:
@@ -64,8 +75,8 @@ SAC:
   extra_data: ["log_pis", "remaining_steps"]              # default: []
 
   # policy_kwargs
-  pi: [256, 256]
-  qf: [256, 256]
+  pi: [128, 128]
+  qf: [128, 128]
   activation: 'relu'
   lr_actor: 7.3e-4
   lr_critic: 7.3e-4
