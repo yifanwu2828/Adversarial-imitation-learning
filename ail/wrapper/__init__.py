@@ -9,7 +9,7 @@ from ail.wrapper.action_wrapper import (
     RescaleBoxAction,
 )
 from ail.wrapper.vev_norm_wrapper import VecNormalize
-from ail.wrapper.done_after_success import DoneAfterSuccess
+from ail.wrapper.done_on_success import DoneOnSuccessWrapper
 from ail.wrapper.absorbing_wrapper import AbsorbingWrapper
 from ail.wrapper.time_aware_obs_wrapper import TimeAwareObsWrapper
 
@@ -34,7 +34,7 @@ EnvWrapper = {
         clip_obs=float("inf"),
         clip_reward=10,
     ),
-    "done_success": DoneAfterSuccess,
+    "done_success": DoneOnSuccessWrapper,
     "absorbing": AbsorbingWrapper,
     "time_aware": partial(TimeAwareObsWrapper, verbose=True),
     "filter_obs": partial(FilterObservation, filter_keys=["desired_goal", "observation"]),
