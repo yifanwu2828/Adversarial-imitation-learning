@@ -5,8 +5,9 @@
 *runs/
 *log/
 *logs/
-mujoco_py/
-
+.mujoco_py*/
+.*mujoco-py*/
+nvenv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

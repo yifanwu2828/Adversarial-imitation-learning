@@ -2,10 +2,10 @@ gym
 numpy
 scipy
 matplotlib
-mujoco-py
+# mujoco-py
 matplotlib
 scikit-learn
-torch
+# torch
 tensorboard
 tqdm
 yacs
