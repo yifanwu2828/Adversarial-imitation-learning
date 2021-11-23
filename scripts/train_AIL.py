@@ -35,7 +35,7 @@ def CLI():
         "--env_id",
         "-env",
         type=str,
-        choices=["InvertedPendulum-v2", "HalfCheetah-v2", "Hopper-v3", "NavEnv-v0", "FetchReach-v1", "FetchPush-v1"],
+        choices=["InvertedPendulum-v2", "HalfCheetah-v2", "Hopper-v3", "NavEnv-v0", "FetchReach-v1", "FetchPush-v1", "FetchSlide-v1"],
         help="Envriment to train on.",
     )
     p.add_argument(

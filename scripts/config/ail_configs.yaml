@@ -69,8 +69,10 @@ SAC:
   extra_data: ["log_pis", "remaining_steps"]              # default: []
   
   # SAC policy_kwargs
-  pi: [128, 128]              # default: [128, 128]
-  qf: [128, 128]              # default: [128, 128]
+  # pi: [128, 128]              # default: [128, 128]
+  # qf: [128, 128]              # default: [128, 128]
+  pi: [512, 512,]              # default: [128, 128]
+  qf: [512, 512,]              # default: [128, 128]
   activation: "relu_inplace"  # default: "relu"
   lr_actor: 7.0e-4            # default: 7.3e-4
   lr_critic: 7.0e-4           # default: 7.3e-4
