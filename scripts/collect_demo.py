@@ -26,7 +26,7 @@ from ail.common.env_utils import maybe_make_env, is_wrapped
 from ail.common.utils import set_random_seed
 from ail.common.pytorch_util import asarray_shape2d
 from ail.common.type_alias import DoneMask
-from ail.wrapper import AbsorbingWrapper
+from ail.wrapper import AbsorbingWrapper, DoneOnSuccessWrapper
 from sb3_contrib.common.wrappers import TimeFeatureWrapper
 
 
@@ -58,6 +58,7 @@ def collect_demo(
     env = TimeFeatureWrapper(env)
     env.seed(seed)
     set_random_seed(seed)
+    env = DoneOnSuccessWrapper(env)
 
     use_absorbing_state = is_wrapped(env, AbsorbingWrapper)
     
@@ -100,7 +101,6 @@ def collect_demo(
             raise ValueError("Please provide either sb3_model or cumstom algo")
 
         next_state, reward, done, _ = env.step(action)
-
         # * Here we use an inverse convention in which DONE = 0 and NOT_DONE = 1.
         if not done or t + 1 == env.spec.max_episode_steps:
             done_mask = DoneMask.NOT_DONE.value
@@ -205,6 +205,7 @@ if __name__ == "__main__":
             "FetchReach-v1",
             "FetchPush-v1",
             "FetchSlide-v1",
+            "FetchPickAndPlace-v1",
         ],
         help="Envriment to interact with",
     )

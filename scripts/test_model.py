@@ -35,11 +35,12 @@ if __name__ == '__main__':
         }
     
     
-    env_id = "FetchSlide-v1"
+    env_id = "FetchPickAndPlace-v1"
     
     env = gym.make(env_id)
     env = TimeFeatureWrapper(gym.make(env_id))
-    env = DoneAfterSuccess(env)
+    
+    # env = DoneAfterSuccess(env)
     
     ic(env.observation_space)
     
