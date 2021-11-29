@@ -11,7 +11,6 @@ import torch as th
 import matplotlib.pyplot as plt
 import matplotlib
 
-matplotlib.use("Tkagg")
 from tqdm import tqdm
 
 try:
@@ -196,7 +195,6 @@ if __name__ == "__main__":
     p.add_argument("--weight", type=str, default="")
     p.add_argument(
         "--env_id",
-        "-env",
         type=str,
         required=True,
         choices=[
