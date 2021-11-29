@@ -1,5 +1,5 @@
 action in [-1, 1]: true
 next_observation in [-1, 1]: false
 observation in [-1, 1]: false
-return_mean: -30.05909090909091
-return_std: 12.482029230818533
+return_mean: -28.56300268096515
+return_std: 12.323365352502249

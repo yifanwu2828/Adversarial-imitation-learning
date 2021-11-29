@@ -71,11 +71,11 @@ SAC:
   # SAC policy_kwargs
   # pi: [128, 128]              # default: [128, 128]
   # qf: [128, 128]              # default: [128, 128]
-  pi: [512, 512,]              # default: [128, 128]
-  qf: [512, 512,]              # default: [128, 128]
+  pi: [512, 512]              # default: [128, 128]
+  qf: [512, 512]              # default: [128, 128]
   activation: "relu_inplace"  # default: "relu"
-  lr_actor: 7.0e-4            # default: 7.3e-4
-  lr_critic: 7.0e-4           # default: 7.3e-4
+  lr_actor: 3.0e-4            # default: 7.3e-4
+  lr_critic: 5.0e-4           # default: 7.3e-4
 
 
 
@@ -94,7 +94,7 @@ DISC:
   # ent_coef: 0.03  # default: 0.0
 
   epoch_disc: 1  
-  lr_disc: 1.e-4  #7.0e-5
+  lr_disc: 7.0e-5
   # choice = ["logsigmoid", "softplus", "logit"] # default: "logsigmoid"
   rew_input_choice: logsigmoid
   # rew_input_choice: softplus
