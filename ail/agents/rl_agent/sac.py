@@ -263,9 +263,9 @@ class SAC(OffPolicyAgent):
 
         remaining_steps = 0
         if self.use_absorbing_state:
-            if done and episode_timesteps < env._max_episode_steps:
+            if done and episode_timesteps < env.spec.max_episode_steps:
                 next_state = env.absorbing_state
-                remaining_steps = env._max_episode_steps - episode_timesteps
+                remaining_steps = env.spec.max_episode_steps - episode_timesteps
                 self.buffer.abs_counter += remaining_steps
 
         data = {
@@ -298,7 +298,7 @@ class SAC(OffPolicyAgent):
             But for GAIL, we need to have an actual absorbing state.
             """
             if self.use_absorbing_state and (
-                episode_timesteps < env._max_episode_steps
+                episode_timesteps < env.spec.max_episode_steps
             ):
                 # A fake action for the absorbing state (all zeros).
                 absorbing_data = {
