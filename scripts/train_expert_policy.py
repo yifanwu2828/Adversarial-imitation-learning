@@ -185,7 +185,7 @@ def visualize_policy(env, model, num_episodes=100, render=True, random_policy=Fa
     print(f"-" * 50)
     print(
         f"Mean episode reward: {mean_episode_reward:.3f} +/- "
-        f"{std_episode_reward:.3f} in {num_episodes} episodes"
+        f"{std_episode_reward:.3f} in {num_episodes} episodes "
         f"Success rate: {total_success_rate / num_episodes * 100:.2f}%"""
     )
     print(f"-" * 50)
