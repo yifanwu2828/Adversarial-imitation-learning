@@ -1,12 +1,10 @@
 import argparse
 import pathlib
 
-import gym
 import numpy as np
 import torch as th
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from stable_baselines3 import SAC, PPO
 
 from ail.agents import ALGO
 from ail.common.utils import set_random_seed
@@ -20,13 +18,8 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
     ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
 
-SB3_ALGO = {
-    "sb3_ppo": PPO,
-    "sb3_sac": SAC,
-}
 
-
-def eval_th_algo(model, eval_env, num_episodes=10, seed=42, render=False, sb3=False):
+def eval_th_algo(model, eval_env, num_episodes=10, seed=42, render=False):
     """
     Evaluate a RL agent
     :param model: (BaseRLModel object) the RL Agent
@@ -38,15 +31,13 @@ def eval_th_algo(model, eval_env, num_episodes=10, seed=42, render=False, sb3=Fa
     
     eval_env.seed(seed)
     all_episode_rewards = []
+    total_success_rate = 0
     for _ in tqdm(range(num_episodes)):
         episode_rewards = []
         done = False
         obs = eval_env.reset()
         while not done:
-            if sb3:
-                action, _ = model.predict(th.as_tensor(obs).float())
-            else:
-                action = model.exploit(th.as_tensor(obs).float(), scale=1)
+            action = model.exploit(th.as_tensor(obs).float(), scale=1)
             # here, action, rewards and dones are arrays
             obs, reward, done, info = eval_env.step(np.asarray(action))
             episode_rewards.append(reward)
@@ -57,6 +48,7 @@ def eval_th_algo(model, eval_env, num_episodes=10, seed=42, render=False, sb3=Fa
                     pass
 
         all_episode_rewards.append(sum(episode_rewards))
+        total_success_rate += info["is_success"]
     eval_env.close()
 
     mean_episode_reward = np.mean(all_episode_rewards)
@@ -64,7 +56,8 @@ def eval_th_algo(model, eval_env, num_episodes=10, seed=42, render=False, sb3=Fa
     print(f"-" * 50)
     print(
         f"Mean episode reward: {mean_episode_reward:.3f} +/- "
-        f"{std_episode_reward:.3f} in {num_episodes} episodes"
+        f"{std_episode_reward:.3f} in {num_episodes} episodes "
+        f"Success rate: {total_success_rate / num_episodes * 100:.2f}%"""
     )
     plt.plot(all_episode_rewards)
     plt.show()
@@ -95,7 +88,7 @@ if __name__ == "__main__":
     p.add_argument("--size", "-s", type=int, default=64)
 
     p.add_argument("--rollout_length", type=int, default=None)
-    p.add_argument("--num_eval_episodes", type=int, default=20)
+    p.add_argument("--num_eval_episodes", type=int, default=50)
     p.add_argument("--render", "-r", action="store_true")
     p.add_argument("--cuda", action="store_true")
     p.add_argument("--seed", type=int, default=42)
@@ -121,14 +114,6 @@ if __name__ == "__main__":
 
 
     args.weight = "./gen_actor.pth"
-
-    if not args.weight:
-        demo_dir = path.parent / "rl-trained-agents" / args.env_id
-        if args.algo.startswith("sb3"):
-            args.weight = demo_dir / args.algo[4:] / f"{args.env_id}_sb3"
-        else:
-            args.weight = demo_dir / args.algo / f"{args.env_id}_actor.pth"
-
     
     pi_arch = [args.size] * args.n_layers
     demo = ALGO[args.algo].load(
@@ -138,15 +123,8 @@ if __name__ == "__main__":
         env=dummy_env,
     )
     demo.actor.eval()
-    use_sb3 = False
 
     print(f"weight_dir: {args.weight}\n")
-
-    # Max episode length
-    max_ep_len = (
-        args.rollout_length if args.rollout_length else dummy_env.spec.max_episode_steps
-    )
-    total_steps = args.num_eval_episodes * max_ep_len
 
     eval_th_algo(
         model=demo,
@@ -154,5 +132,4 @@ if __name__ == "__main__":
         num_episodes=args.num_eval_episodes,
         seed=args.seed,
         render=args.render,
-        sb3=use_sb3,
     )
