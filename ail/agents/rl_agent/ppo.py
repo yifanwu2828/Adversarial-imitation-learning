@@ -153,13 +153,13 @@ class PPO(OnPolicyAgent):
         # * Here we use an inverse convention in which DONE = 0 and NOT_DONE = 1
         # * to match absorbing state implementation in DAC paper.
         done_mask: float
-        if (episode_timesteps == env._max_episode_steps) or not done:
+        if (episode_timesteps == env.spec.max_episode_steps) or not done:
             done_mask = DoneMask.NOT_DONE.value
         else:
             done_mask = DoneMask.DONE.value
 
         absorbing_cond = all(
-            [add_absorbing_state, done, episode_timesteps < env._max_episode_steps]
+            [add_absorbing_state, done, episode_timesteps < env.spec.max_episode_steps]
         )
         if absorbing_cond:
             next_state = env.get_absorbing_state()
@@ -182,7 +182,7 @@ class PPO(OnPolicyAgent):
             episode_timesteps = 0
             next_state = env.reset()
             # Add a absorbing state to buffer when done.
-            if add_absorbing_state and (episode_timesteps < env._max_episode_steps):
+            if add_absorbing_state and (episode_timesteps < env.spec.max_episode_steps):
                 # A fake action for the absorbing state.
                 zero_action = np.zeros(env.action_space.shape)
                 absorbing_state = env.get_absorbing_state()
