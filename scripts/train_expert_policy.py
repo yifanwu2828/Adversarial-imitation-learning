@@ -41,6 +41,12 @@ WRAPPER = {
     
 }
 
+custom_objects = {
+            "learning_rate": 0.0,
+            "lr_schedule": lambda _: 0.0,
+            "clip_range": lambda _: 0.0,
+}
+
 def build_env(env_name, sparse_reward=False, wrapper_lst=()):
     env = gym.make(env_name)
     
@@ -133,18 +139,19 @@ def load_policy(algo, model_path, env, device="cpu"):
         raise ValueError(f"RL algorithm {algo} not supported yet ...")
 
     ic(model_path)
-    model = algo_cls.load(model_path, env=env, device=device)
+    model = algo_cls.load(model_path, env=env, device=device, custom_objects=custom_objects)
     ic(env.observation_space)
     return model
 
 
-def visualize_policy(env, model, num_episodes=10, render=True):
+def visualize_policy(env, model, num_episodes=100, render=True, random_policy=False):
     """
     Visualize the policy in env
     """
     # Ensure testing on same device
     total_ep_returns = []
     total_ep_lengths = []
+    total_success_rate = 0
 
     for _ in range(num_episodes):
         obs = env.reset()
@@ -152,7 +159,10 @@ def visualize_policy(env, model, num_episodes=10, render=True):
         done = False
 
         while not done:
-            action, _states = model.predict(obs, deterministic=True)
+            if random_policy:
+                action = env.action_space.sample()
+            else:
+                action, _states = model.predict(obs, deterministic=True)
             obs, reward, done, info = env.step(action)
             reward = 0 if reward ==0 else reward
             ic(reward, done, info)
@@ -167,6 +177,7 @@ def visualize_policy(env, model, num_episodes=10, render=True):
             if done:
                 total_ep_returns.append(ep_ret)
                 total_ep_lengths.append(ep_len)
+                total_success_rate += info["is_success"]
                 obs = env.reset()
 
     mean_episode_reward = np.mean(total_ep_returns)
@@ -175,6 +186,7 @@ def visualize_policy(env, model, num_episodes=10, render=True):
     print(
         f"Mean episode reward: {mean_episode_reward:.3f} +/- "
         f"{std_episode_reward:.3f} in {num_episodes} episodes"
+        f"Success rate: {total_success_rate / num_episodes * 100:.2f}%"""
     )
     print(f"-" * 50)
     env.close()
@@ -187,8 +199,7 @@ def main():
         "--env_id",
         "-env",
         type=str,
-        choices = ["FetchReach-v1", "FetchSlide-v1"],
-        default="FetchReach-v1",
+        choices = ["FetchReach-v1", "FetchPush-v1", "FetchSlide-v1", "FetchPickAndPlace-v1"],
     )
     parser.add_argument("--algo", type=str, default="SAC")
     parser.add_argument("--num_steps", "-n", type=int, default=100_000)
@@ -200,6 +211,8 @@ def main():
     parser.add_argument("--cuda", action="store_true")
     parser.add_argument("--train", "-t", action="store_true")
     parser.add_argument("--render", "-r", action="store_true")
+    parser.add_argument("--rnd",  action="store_true")
+    
     args = parser.parse_args()
 
     env = build_env(args.env_id, sparse_reward=True, wrapper_lst=["time_feature"]) 
@@ -224,11 +237,11 @@ def main():
 
     # Load policy from file
 
-    model_path = f"./logs/{args.env_id}/{args.algo.lower()}/best_model/best_model"
+    model_path = f"./ail/rl-trained-agents/{args.env_id}/{args.algo.lower()}/{args.env_id}_sb3"
     model = load_policy(args.algo, model_path, env, device="cpu")
 
     # Evaluate the policy and Optionally render the policy
-    total_ep_returns = visualize_policy(env, model, render=args.render)
+    total_ep_returns = visualize_policy(env, model, render=args.render, random_policy=args.rnd)
     plt.scatter(range(len(total_ep_returns)), total_ep_returns)
     plt.show()
 
