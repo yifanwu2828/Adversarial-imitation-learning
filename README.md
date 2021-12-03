@@ -2,7 +2,7 @@
 
 This repository contains implementations of adversarial imitation learning algorithms like [GAIL](https://arxiv.org/abs/1606.03476)
 and [AIRL](https://arxiv.org/abs/1710.11248).
-Some experimental configurations are discussed in [What Matters for Adversarial Imitation Learning?](https://arxiv.org/abs/2106.00672)
+<!-- Some experimental configurations are discussed in [What Matters for Adversarial Imitation Learning?](https://arxiv.org/abs/2106.00672) -->
 
 ## Prerequisite
 
@@ -17,4 +17,4 @@ Some experimental configurations are discussed in [What Matters for Adversarial 
 
 ## Results and Discussion
 
-[Reprot](./Summer_Report.pdf)
+<!-- [Reprot](./Summer_Report.pdf) -->
